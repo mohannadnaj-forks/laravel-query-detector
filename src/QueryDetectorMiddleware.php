@@ -3,6 +3,7 @@
 namespace BeyondCode\QueryDetector;
 
 use Closure;
+use Illuminate\Support\Str;
 
 class QueryDetectorMiddleware
 {
@@ -29,8 +30,12 @@ class QueryDetectorMiddleware
 
         $this->detector->boot();
 
+        $this->detector->setContext(Str::random());
+
         /** @var \Illuminate\Http\Response $response */
         $response = $next($request);
+
+        $this->detector->setContext(Str::random());
 
         // Modify the response to add the Debugbar
         $this->detector->output($request, $response);
