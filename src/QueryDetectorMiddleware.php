@@ -28,7 +28,7 @@ class QueryDetectorMiddleware
             return $next($request);
         }
 
-        $this->detector->boot();
+        $this->detector->bootIfNotBooted();
 
         $this->detector->newContext();
 

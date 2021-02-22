@@ -10,18 +10,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use BeyondCode\QueryDetector\Events\QueryDetected;
+use BeyondCode\QueryDetector\Concerns\Bootable;
 
 class QueryDetector
 {
+    use Bootable;
     /** @var string */
     protected $context = '';
-
-    /**
-     * Indicates if query detector was "booted".
-     *
-     * @var bool
-     */
-    protected $booted = false;
 
     /** @var Collection */
     private $queries;
@@ -31,12 +26,8 @@ class QueryDetector
         $this->queries = Collection::make();
     }
 
-    public function boot()
+    protected function boot()
     {
-        if ($this->isBooted()) {
-            return;
-        }
-
         DB::listen(function($query) {
             $backtrace = collect(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 50));
 
@@ -205,16 +196,6 @@ class QueryDetector
         return $this;
     }
 
-
-    /**
-     * Determine if query detector was booted
-     *
-     * @return bool
-     */
-    public function isBooted()
-    {
-        return $this->booted;
-    }
 
     public function getDetectedQueries(): Collection
     {
