@@ -30,12 +30,12 @@ class QueryDetectorMiddleware
 
         $this->detector->boot();
 
-        $this->detector->setContext(Str::random());
+        $this->detector->newContext();
 
         /** @var \Illuminate\Http\Response $response */
         $response = $next($request);
 
-        $this->detector->setContext(Str::random());
+        $this->detector->newContext();
 
         // Modify the response to add the Debugbar
         $this->detector->output($request, $response);

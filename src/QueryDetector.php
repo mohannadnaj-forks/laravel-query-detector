@@ -4,6 +4,7 @@ namespace BeyondCode\QueryDetector;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\HttpFoundation\Response;
@@ -188,6 +189,18 @@ class QueryDetector
     public function setContext(string $context): self
     {
         $this->context = $context;
+
+        return $this;
+    }
+
+    /**
+     * Generate a new context for the executed queries.
+     *
+     * @return self
+     */
+    public function newContext(): self
+    {
+        $this->context = Str::random();
 
         return $this;
     }
