@@ -4,20 +4,18 @@ namespace BeyondCode\QueryDetector;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use BeyondCode\QueryDetector\Events\QueryDetected;
 use BeyondCode\QueryDetector\Concerns\Bootable;
+use BeyondCode\QueryDetector\Concerns\HasContext;
 use BeyondCode\QueryDetector\Concerns\InteractsWithSourceFiles;
 
 class QueryDetector
 {
-    use Bootable, InteractsWithSourceFiles;
-    /** @var string */
-    protected $context = '';
+    use Bootable, HasContext, InteractsWithSourceFiles;
 
     /** @var Collection */
     private $queries;
@@ -100,31 +98,6 @@ class QueryDetector
                 ];
             }
         }
-    }
-
-    /**
-     * Set specific context for the executed queries.
-     *
-     * @param string $context
-     * @return self
-     */
-    public function setContext(string $context): self
-    {
-        $this->context = $context;
-
-        return $this;
-    }
-
-    /**
-     * Generate a new context for the executed queries.
-     *
-     * @return self
-     */
-    public function newContext(): self
-    {
-        $this->context = Str::random();
-
-        return $this;
     }
 
 
