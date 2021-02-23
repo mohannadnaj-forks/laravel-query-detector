@@ -242,7 +242,7 @@ class QueryDetectorTest extends TestCase
 
         $this->get('/');
 
-        Event::assertDispatched(QueryDetected::class);
+        Event::assertDispatched(QueryDetected::class, 1);
     }
 
     /** @test */
