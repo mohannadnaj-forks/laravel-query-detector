@@ -1,29 +1,3 @@
-
-This fork for a quick fixes that I'll use now for some project, then I should submit it later as a PR.
-
-
-TODO:
-
-- Check if `QueryDetected` is fired more times than it should be.
-
-- Instead of repeatedly doing `$this->detector->setContext(Str::random());` in the middleware, it should be something like: `$this->detector->newContext();`.
-
-- Configurable excluded path, currently it's in `src/QueryDetector.php` as:
-```
-            '/vendor/laravel/framework/src/Illuminate/Database',
-            '/vendor/laravel/framework/src/Illuminate/Events',
-```
-
-Also consider if it's by default should completely disregard the `/vendor/` files.
-
-- Refactor `src/QueryDetector.php`
-
-- Document Context Feature
-
-
-____
-
-
 # Laravel N+1 Query Detector
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/beyondcode/laravel-query-detector.svg?style=flat-square)](https://packagist.org/packages/beyondcode/laravel-query-detector)
