@@ -58,46 +58,50 @@ class QueryDetector
             return Arr::get($trace, 'object') instanceof Builder;
         });
 
-        // The query is coming from an Eloquent model
-        if (! is_null($modelTrace)) {
-            /*
-             * Relations get resolved by either calling the "getRelationValue" method on the model,
-             * or if the class itself is a Relation.
-             */
-            $relation = $backtrace->first(function ($trace) {
-                return Arr::get($trace, 'function') === 'getRelationValue' || Arr::get($trace, 'class') === Relation::class ;
-            });
-
-            // We try to access a relation
-            if (is_array($relation) && isset($relation['object'])) {
-                if ($relation['class'] === Relation::class) {
-                    $model = get_class($relation['object']->getParent());
-                    $relationName = get_class($relation['object']->getRelated());
-                    $relatedModel = $relationName;
-                } else {
-                    $model = get_class($relation['object']);
-                    $relationName = $relation['args'][0];
-                    $relatedModel = $relationName;
-                }
-
-                $sources = $this->findSource($backtrace);
-
-                $key = md5($this->context . $query->sql . $model . $relationName . $sources[0]->name . $sources[0]->line);
-
-                $count = Arr::get($this->queries, $key.'.count', 0);
-                $time = Arr::get($this->queries, $key.'.time', 0);
-
-                $this->queries[$key] = [
-                    'count' => ++$count,
-                    'time' => $time + $query->time,
-                    'query' => $query->sql,
-                    'model' => $model,
-                    'relatedModel' => $relatedModel,
-                    'relation' => $relationName,
-                    'sources' => $sources
-                ];
-            }
+        // Ensure the query is coming from an Eloquent model
+        if (is_null($modelTrace)) {
+            return ;
         }
+
+        /*
+         * Relations get resolved by either calling the "getRelationValue" method on the model,
+         * or if the class itself is a Relation.
+         */
+        $relation = $backtrace->first(function ($trace) {
+            return Arr::get($trace, 'function') === 'getRelationValue' || Arr::get($trace, 'class') === Relation::class ;
+        });
+
+        // Ensure we are accessing a relation
+        if (! is_array($relation) || ! isset($relation['object'])) {
+            return ;
+        }
+
+        if ($relation['class'] === Relation::class) {
+            $model = get_class($relation['object']->getParent());
+            $relationName = get_class($relation['object']->getRelated());
+            $relatedModel = $relationName;
+        } else {
+            $model = get_class($relation['object']);
+            $relationName = $relation['args'][0];
+            $relatedModel = $relationName;
+        }
+
+        $sources = $this->findSource($backtrace);
+
+        $key = md5($this->context . $query->sql . $model . $relationName . $sources[0]->name . $sources[0]->line);
+
+        $count = Arr::get($this->queries, $key.'.count', 0);
+        $time = Arr::get($this->queries, $key.'.time', 0);
+
+        $this->queries[$key] = [
+            'count' => ++$count,
+            'time' => $time + $query->time,
+            'query' => $query->sql,
+            'model' => $model,
+            'relatedModel' => $relatedModel,
+            'relation' => $relationName,
+            'sources' => $sources
+        ];
     }
 
 
