@@ -141,6 +141,7 @@ class QueryDetector
     protected function applyOutput(Collection $detectedQueries, Response $response)
     {
         foreach ($this->getOutputTypes() as $type) {
+            dd($type);
             app($type)->output($detectedQueries, $response);
         }
     }

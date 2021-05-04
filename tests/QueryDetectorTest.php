@@ -306,4 +306,31 @@ class QueryDetectorTest extends TestCase
         $this->assertSame(Author::class, $queries[0]['model']);
         $this->assertSame('profile', $queries[0]['relation']);
     }
+
+    /** @test */
+    public function it_can_use_exception_output()
+    {
+        Route::get('/', function () {
+            $this->app['config']->set('querydetector.output', [
+                Exception::class
+            ]);
+
+            $authors = Author::all();
+
+            foreach ($authors as $author) {
+                $author->profile;
+            }
+        });
+
+
+        $this->get('/');
+
+        $queries = app(QueryDetector::class)->getDetectedQueries();
+
+        $this->assertCount(2, $queries);
+
+        $this->assertSame(Author::count(), $queries[0]['count']);
+        $this->assertSame(Author::class, $queries[0]['model']);
+        $this->assertSame('profile', $queries[0]['relation']);
+    }
 }
